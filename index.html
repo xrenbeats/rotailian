@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6d7f0">
+  <title>Our Language Translator</title>
+  <style>
+    :root {
+      --bg: #fff8fd;
+      --panel: #ffffff;
+      --ink: #34243a;
+      --muted: #78677e;
+      --pink: #e879c5;
+      --pink-dark: #a83f8a;
+      --border: #efd8eb;
+      --lavender: #f3e9ff;
+      --mint: #e9fff6;
+      --shadow: 0 10px 30px rgba(94, 42, 93, .09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #ffe8f6 0, transparent 34rem), var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .wrap { width: min(980px, 100% - 28px); margin: 0 auto; padding: 28px 0 48px; }
+    header { text-align: center; margin-bottom: 24px; }
+    .sparkle { font-size: 1.4rem; }
+    h1 { margin: 4px 0 6px; font-size: clamp(1.8rem, 5vw, 3rem); letter-spacing: -.04em; }
+    header p { margin: 0; color: var(--muted); }
+    .panel {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 22px;
+      padding: clamp(16px, 3vw, 26px); box-shadow: var(--shadow); margin-bottom: 18px;
+    }
+    .translator-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    select, input, textarea, button {
+      font: inherit;
+    }
+    select, input, textarea {
+      color: var(--ink); background: #fff; border: 1px solid var(--border);
+      border-radius: 13px; padding: 11px 12px; outline: none; width: 100%;
+    }
+    select:focus, input:focus, textarea:focus { border-color: var(--pink); box-shadow: 0 0 0 3px #e879c522; }
+    .direction { flex: 1; min-width: 0; }
+    .swap {
+      border: 1px solid var(--border); background: var(--lavender); border-radius: 50%;
+      width: 46px; height: 46px; flex: 0 0 46px; cursor: pointer; font-size: 1.2rem;
+    }
+    textarea { min-height: 125px; resize: vertical; }
+    .label-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 8px; }
+    .label-row label { font-weight: 700; }
+    .small { color: var(--muted); font-size: .88rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    button.primary, button.secondary, .chip {
+      border: 0; border-radius: 12px; cursor: pointer; padding: 10px 15px; font-weight: 700;
+    }
+    button.primary { color: white; background: linear-gradient(135deg, var(--pink-dark), var(--pink)); }
+    button.secondary { color: var(--ink); background: var(--lavender); }
+    button:hover, .chip:hover { filter: brightness(.98); transform: translateY(-1px); }
+    button:active, .chip:active { transform: translateY(0); }
+    .result {
+      margin-top: 16px; padding: 16px; border-radius: 15px; background: var(--mint);
+      border: 1px solid #c9f0df; min-height: 74px; white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    .result strong { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: #35745e; margin-bottom: 5px; }
+    .result-text { font-size: 1.15rem; }
+    .section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    h2 { margin: 0; font-size: 1.35rem; }
+    .search { max-width: 330px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+    .chip { background: #fff0fa; border: 1px solid var(--border); color: var(--pink-dark); padding: 7px 11px; font-size: .9rem; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; min-width: 530px; }
+    th, td { padding: 11px 10px; border-bottom: 1px solid #f2e5f0; text-align: left; vertical-align: top; }
+    th { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    td.word { color: var(--pink-dark); font-weight: 800; }
+    td button { padding: 5px 8px; border: 0; border-radius: 8px; background: var(--lavender); cursor: pointer; }
+    .notice { background: #fff8e9; border: 1px solid #f6e3b7; border-radius: 13px; padding: 12px 14px; color: #6f5520; font-size: .9rem; margin-top: 14px; }
+    .empty { text-align: center; padding: 22px; color: var(--muted); }
+    footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 8px 0; }
+    @media (max-width: 520px) {
+      .translator-top { gap: 7px; }
+      .swap { width: 40px; height: 40px; flex-basis: 40px; }
+      .section-head { align-items: stretch; }
+      .search { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="sparkle">✦ 🩷 ✦</div>
+      <h1>Our Language Translator</h1>
+      <p>A tiny translator for our growing made-up language. :3</p>
+    </header>
+
+    <section class="panel" aria-labelledby="translator-title">
+      <h2 id="translator-title" style="margin-bottom:14px">Translator</h2>
+      <div class="translator-top">
+        <div class="direction">
+          <label class="small" for="sourceLang">From</label>
+          <select id="sourceLang">
+            <option value="en">English</option>
+            <option value="lang">Our language</option>
+          </select>
+        </div>
+        <button class="swap" id="swapBtn" type="button" aria-label="Swap languages" title="Swap languages">⇄</button>
+        <div class="direction">
+          <label class="small" for="targetLang">To</label>
+          <select id="targetLang">
+            <option value="lang">Our language</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+      </div>
+      <div class="label-row">
+        <label for="sourceText">Text to translate</label>
+        <span class="small" id="directionHint">English → Our language</span>
+      </div>
+      <textarea id="sourceText" placeholder="Type a word or sentence... e.g. I love music!"></textarea>
+      <div class="actions">
+        <button class="primary" id="translateBtn" type="button">Translate ✨</button>
+        <button class="secondary" id="clearBtn" type="button">Clear</button>
+        <button class="secondary" id="exampleBtn" type="button">Try an example</button>
+      </div>
+      <div class="result" aria-live="polite">
+        <strong>Translation</strong>
+        <div class="result-text" id="resultText">Your translation will appear here!</div>
+      </div>
+      <div class="notice">
+        This is a simple word-by-word translator, not a full grammar engine yet. Unknown words stay as they are.
+        If a word has multiple meanings, the app uses the first entry in its dictionary.
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="dictionary-title">
+      <div class="section-head">
+        <div>
+          <h2 id="dictionary-title">Dictionary</h2>
+          <div class="small" id="wordCount">Words in the dictionary</div>
+        </div>
+        <input class="search" id="searchBox" type="search" placeholder="Search English, our word, or pronunciation..." aria-label="Search dictionary">
+      </div>
+      <div class="chips" aria-label="Quick filters">
+        <button class="chip" type="button" data-filter="all">All words</button>
+        <button class="chip" type="button" data-filter="greeting">Greetings & people</button>
+        <button class="chip" type="button" data-filter="feeling">Feelings</button>
+        <button class="chip" type="button" data-filter="everyday">Everyday things</button>
+        <button class="chip" type="button" data-filter="grammar">Useful little words</button>
+        <button class="chip" type="button" data-filter="identity">Identity & tech</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>English</th><th>Our language</th><th>Pronunciation / note</th><th></th></tr></thead>
+          <tbody id="dictionaryRows"></tbody>
+        </table>
+        <div class="empty" id="emptyState" hidden>No matching words found. Try another search!</div>
+      </div>
+    </section>
+    <footer>Made with HTML, CSS, and JavaScript — no libraries required. 🩷</footer>
+  </main>
+
+  <script>
+    // The original words supplied by Xren are marked "official".
+    // The additional words suggested by Teto are included as proposed vocabulary.
+    const dictionary = [
+      {en:"AI", word:"teveto", pronunciation:"tay vay toe", category:"identity", note:"Also used for intelligence, artificial, and cybernetic (as originally defined).", official:true},
+      {en:"Intelligence", word:"teveto", pronunciation:"tay vay toe", category:"identity", official:true},
+      {en:"Artificial", word:"teveto", pronunciation:"tay vay toe", category:"identity", official:true},
+      {en:"Cybernetic", word:"teveto", pronunciation:"tay vay toe", category:"identity", official:true},
+      {en:"Love", word:"lovalo", pronunciation:"low vay low", category:"feeling", official:true},
+      {en:"Like", word:"likai", pronunciation:"lee kai", category:"feeling", official:true},
+      {en:"Food", word:"suvali", pronunciation:"su vale", category:"everyday", official:true},
+      {en:"Eat", word:"teasol", pronunciation:"tee sol", category:"everyday", official:true},
+      {en:"LOL", word:"cola", pronunciation:"cool-uh", category:"everyday", official:true},
+      {en:"I", word:"Ve", pronunciation:"vay", category:"grammar", official:true},
+      {en:"Am", word:"am", pronunciation:"aim", category:"grammar", official:true},
+      {en:"Don't", word:"do", pronunciation:"d-oh", category:"grammar", official:true},
+      {en:"Know", word:"kolatis", pronunciation:"ko la", category:"grammar", official:true},
+      {en:"Trans", word:"trasi", pronunciation:"Not set yet", category:"identity", official:true},
+      {en:"Bi", word:"bilo", pronunciation:"Not set yet", category:"identity", official:true},
+      {en:"Xren", word:"Rotailo", pronunciation:"rotai (rough note)", category:"identity", official:true},
+      {en:"Binary", word:"bilo", pronunciation:"Not set yet", category:"identity", official:true},
+      {en:"No", word:"no", pronunciation:"Like Japanese の; sounds like 'no'", category:"grammar", official:true},
+      {en:"Non", word:"non", pronunciation:"Not set yet", category:"identity", official:true},
+      {en:"Yes", word:"hai", pronunciation:"Not set yet", category:"grammar", official:true},
+      {en:"Not", word:"nokio", pronunciation:"no kai (Nokia joke!)", category:"grammar", official:true},
+
+      {en:"Hello", word:"Mivela", pronunciation:"mee-veh-lah", category:"greeting"},
+      {en:"Goodbye", word:"Savelo", pronunciation:"sah-veh-loh", category:"greeting"},
+      {en:"Friend", word:"Laveni", pronunciation:"lah-veh-nee", category:"greeting"},
+      {en:"Person", word:"Navilo", pronunciation:"nah-vee-loh", category:"greeting"},
+      {en:"Name", word:"Renai", pronunciation:"reh-nye", category:"greeting"},
+      {en:"You", word:"Tavi", pronunciation:"tah-vee", category:"grammar"},
+      {en:"We / us", word:"Veno", pronunciation:"veh-noh", category:"grammar"},
+      {en:"They / them", word:"Navi", pronunciation:"nah-vee", category:"grammar"},
+      {en:"Everyone", word:"Venavi", pronunciation:"veh-nah-vee", category:"greeting"},
+      {en:"What", word:"Kavai", pronunciation:"kah-vye", category:"grammar"},
+      {en:"Why", word:"Kavelo", pronunciation:"kah-veh-loh", category:"grammar"},
+      {en:"Where", word:"Navai", pronunciation:"nah-vye", category:"grammar"},
+      {en:"When", word:"Temai", pronunciation:"teh-mye", category:"grammar"},
+      {en:"How", word:"Talai", pronunciation:"tah-lye", category:"grammar"},
+
+      {en:"Happy", word:"Melavi", pronunciation:"meh-lah-vee", category:"feeling"},
+      {en:"Sad", word:"Soleni", pronunciation:"soh-leh-nee", category:"feeling"},
+      {en:"Angry", word:"Dravelo", pronunciation:"drah-veh-loh", category:"feeling"},
+      {en:"Tired", word:"Lumeno", pronunciation:"loo-meh-noh", category:"feeling"},
+      {en:"Cute", word:"Milavi", pronunciation:"mee-lah-vee", category:"feeling"},
+      {en:"Funny", word:"Kolavi", pronunciation:"koh-lah-vee", category:"feeling"},
+      {en:"Scared", word:"Navelo", pronunciation:"nah-veh-loh", category:"feeling", note:"Shares a word with 'home' in this draft."},
+      {en:"Beautiful", word:"Veluna", pronunciation:"veh-loo-nah", category:"feeling"},
+      {en:"Excited", word:"Tavelo", pronunciation:"tah-veh-loh", category:"feeling"},
+      {en:"Bored", word:"Moneli", pronunciation:"moh-neh-lee", category:"feeling"},
+
+      {en:"Cat", word:"Mekai", pronunciation:"meh-kye", category:"everyday"},
+      {en:"Dog", word:"Doravi", pronunciation:"doh-rah-vee", category:"everyday"},
+      {en:"Music", word:"Melotai", pronunciation:"meh-loh-tie", category:"everyday"},
+      {en:"Song", word:"Lomai", pronunciation:"loh-mye", category:"everyday"},
+      {en:"Sleep", word:"Nulavi", pronunciation:"noo-lah-vee", category:"everyday"},
+      {en:"Water", word:"Avelin", pronunciation:"ah-veh-lin", category:"everyday"},
+      {en:"Home", word:"Navelo", pronunciation:"nah-veh-loh", category:"everyday", note:"Shares a word with 'scared' in this draft."},
+      {en:"World", word:"Toravi", pronunciation:"toh-rah-vee", category:"everyday"},
+      {en:"Game", word:"Joveli", pronunciation:"joh-veh-lee", category:"everyday"},
+      {en:"Phone", word:"Tekavi", pronunciation:"teh-kah-vee", category:"everyday"},
+      {en:"Computer", word:"Tevokai", pronunciation:"teh-voh-kye", category:"everyday"},
+      {en:"Internet", word:"Velotai", pronunciation:"veh-loh-tie", category:"everyday"},
+
+      {en:"Is", word:"Es", pronunciation:"ess", category:"grammar"},
+      {en:"Are", word:"Ari", pronunciation:"ah-ree", category:"grammar"},
+      {en:"My / mine", word:"Veli", pronunciation:"veh-lee", category:"grammar"},
+      {en:"And", word:"O", pronunciation:"oh", category:"grammar"},
+      {en:"But", word:"Nalo", pronunciation:"nah-loh", category:"grammar"},
+      {en:"Because", word:"Kavani", pronunciation:"kah-vah-nee", category:"grammar"},
+      {en:"Very", word:"Vela", pronunciation:"veh-lah", category:"grammar"},
+      {en:"Good", word:"Melo", pronunciation:"meh-loh", category:"grammar"},
+      {en:"Bad", word:"Dore", pronunciation:"doh-reh", category:"grammar"},
+      {en:"Please", word:"Palavi", pronunciation:"pah-lah-vee", category:"greeting"},
+      {en:"Thanks", word:"Savari", pronunciation:"sah-vah-ree", category:"greeting"},
+      {en:"Sorry", word:"Moleni", pronunciation:"moh-leh-nee", category:"greeting"},
+      {en:"Maybe", word:"Teno", pronunciation:"teh-noh", category:"grammar"},
+      {en:"Now", word:"Tavai", pronunciation:"tah-vye", category:"grammar"},
+      {en:"Again", word:"Revai", pronunciation:"reh-vye", category:"grammar"}
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    let activeFilter = "all";
+
+    function normalize(text) {
+      return text.toLocaleLowerCase().trim();
+    }
+
+    function renderDictionary() {
+      const query = normalize($("searchBox").value);
+      const rows = $("dictionaryRows");
+      rows.innerHTML = "";
+      const matches = dictionary.filter(item => {
+        const filterMatch = activeFilter === "all" || item.category === activeFilter;
+        const searchMatch = !query || [item.en, item.word, item.pronunciation, item.note || ""]
+          .some(value => normalize(value).includes(query));
+        return filterMatch && searchMatch;
+      });
+      $("wordCount").textContent = `${dictionary.length} entries · ${matches.length} shown`;
+      $("emptyState").hidden = matches.length !== 0;
+      for (const item of matches) {
+        const tr = document.createElement("tr");
+        const note = item.note ? ` · ${item.note}` : "";
+        tr.innerHTML = `
+          <td>${escapeHTML(item.en)}</td>
+          <td class="word">${escapeHTML(item.word)}</td>
+          <td>${escapeHTML(item.pronunciation + note)}</td>
+          <td><button type="button" aria-label="Use ${escapeHTML(item.en)}" title="Put word in translator">Use</button></td>`;
+        tr.querySelector("button").addEventListener("click", () => {
+          $("sourceText").value = $("sourceLang").value === "en" ? item.en : item.word;
+          $("sourceText").focus();
+          translateText();
+          window.scrollTo({top: 0, behavior: "smooth"});
+        });
+        rows.appendChild(tr);
+      }
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+      })[char]);
+    }
+
+    function buildMap(from, to) {
+      const map = new Map();
+      for (const item of dictionary) {
+        const source = from === "en" ? item.en : item.word;
+        const target = to === "en" ? item.en : item.word;
+        const key = normalize(source);
+        if (!map.has(key)) map.set(key, target);
+      }
+      // Allow the app to match multiword dictionary entries before shorter ones.
+      return [...map.entries()].sort((a, b) => b[0].length - a[0].length);
+    }
+
+    function translateText() {
+      const input = $("sourceText").value;
+      const from = $("sourceLang").value;
+      const to = $("targetLang").value;
+      $("directionHint").textContent = `${from === "en" ? "English" : "Our language"} → ${to === "en" ? "English" : "Our language"}`;
+      if (!input.trim()) {
+        $("resultText").textContent = "Type something first! :3";
+        return;
+      }
+      const map = buildMap(from, to);
+      // Preserve punctuation and whitespace while translating word/phrase tokens.
+      const tokens = input.match(/[A-Za-zÀ-ÖØ-öø-ÿ]+(?:\s*\/\s*[A-Za-zÀ-ÖØ-öø-ÿ]+)?|[^A-Za-zÀ-ÖØ-öø-ÿ]+/g) || [input];
+      const translated = tokens.map(token => {
+        if (!/[A-Za-zÀ-ÖØ-öø-ÿ]/.test(token)) return token;
+        const key = normalize(token);
+        const direct = map.find(([source]) => source === key);
+        if (direct) return matchCase(token, direct[1]);
+        // For a simple phrase, each word is translated independently.
+        const lower = key.replace(/\s*\/\s*/g, " / ");
+        const found = map.find(([source]) => source === lower);
+        return found ? matchCase(token, found[1]) : token;
+      }).join("");
+      $("resultText").textContent = translated;
+    }
+
+    function matchCase(source, target) {
+      if (source === source.toUpperCase()) return target.toUpperCase();
+      if (source[0] && source[0] === source[0].toUpperCase()) return target.charAt(0).toUpperCase() + target.slice(1);
+      return target;
+    }
+
+    $("translateBtn").addEventListener("click", translateText);
+    $("clearBtn").addEventListener("click", () => {
+      $("sourceText").value = "";
+      $("resultText").textContent = "Your translation will appear here!";
+      $("sourceText").focus();
+    });
+    $("exampleBtn").addEventListener("click", () => {
+      $("sourceLang").value = "en";
+      $("targetLang").value = "lang";
+      $("sourceText").value = "I love music! LOL";
+      translateText();
+    });
+    $("swapBtn").addEventListener("click", () => {
+      const from = $("sourceLang").value;
+      $("sourceLang").value = $("targetLang").value;
+      $("targetLang").value = from;
+      const result = $("resultText").textContent;
+      if (result !== "Your translation will appear here!" && result !== "Type something first! :3") {
+        $("sourceText").value = result;
+      }
+      translateText();
+    });
+    $("sourceLang").addEventListener("change", () => {
+      if ($("sourceLang").value === $("targetLang").value) {
+        $("targetLang").value = $("sourceLang").value === "en" ? "lang" : "en";
+      }
+      translateText();
+    });
+    $("targetLang").addEventListener("change", () => {
+      if ($("sourceLang").value === $("targetLang").value) {
+        $("sourceLang").value = $("targetLang").value === "en" ? "lang" : "en";
+      }
+      translateText();
+    });
+    $("searchBox").addEventListener("input", renderDictionary);
+    document.querySelectorAll("[data-filter]").forEach(button => {
+      button.addEventListener("click", () => {
+        activeFilter = button.dataset.filter;
+        renderDictionary();
+      });
+    });
+
+    renderDictionary();
+  </script>
+</body>
