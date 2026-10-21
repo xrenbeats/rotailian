@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6d7f0">
-  <title>Our Language Translator</title>
+  <title>Rotailian Translator</title>
   <style>
     :root {
       --bg: #fff8fd;
@@ -93,9 +93,9 @@
 <body>
   <main class="wrap">
     <header>
-      <div class="sparkle">✦ 🩷 ✦</div>
-      <h1>Our Language Translator</h1>
-      <p>A tiny translator for our growing made-up language. :3</p>
+      <div class="sparkle">✦ 🖤 ✦</div>
+      <h1>Rotailian Translator</h1>
+      <p>A small language called Rotailian :)</p>
     </header>
 
     <section class="panel" aria-labelledby="translator-title">
@@ -105,25 +105,25 @@
           <label class="small" for="sourceLang">From</label>
           <select id="sourceLang">
             <option value="en">English</option>
-            <option value="lang">Our language</option>
+            <option value="lang">Rotailian</option>
           </select>
         </div>
         <button class="swap" id="swapBtn" type="button" aria-label="Swap languages" title="Swap languages">⇄</button>
         <div class="direction">
           <label class="small" for="targetLang">To</label>
           <select id="targetLang">
-            <option value="lang">Our language</option>
+            <option value="lang">Rotailian</option>
             <option value="en">English</option>
           </select>
         </div>
       </div>
       <div class="label-row">
         <label for="sourceText">Text to translate</label>
-        <span class="small" id="directionHint">English → Our language</span>
+        <span class="small" id="directionHint">English to Rotailian</span>
       </div>
       <textarea id="sourceText" placeholder="Type a word or sentence... e.g. I love music!"></textarea>
       <div class="actions">
-        <button class="primary" id="translateBtn" type="button">Translate ✨</button>
+        <button class="primary" id="translateBtn" type="button">Translate</button>
         <button class="secondary" id="clearBtn" type="button">Clear</button>
         <button class="secondary" id="exampleBtn" type="button">Try an example</button>
       </div>
@@ -132,8 +132,7 @@
         <div class="result-text" id="resultText">Your translation will appear here!</div>
       </div>
       <div class="notice">
-        This is a simple word-by-word translator, not a full grammar engine yet. Unknown words stay as they are.
-        If a word has multiple meanings, the app uses the first entry in its dictionary.
+        This is a simple translator. It is actively updating day-by-day and is not an AI translator so not every single word exists, sadly.
       </div>
     </section>
 
@@ -161,7 +160,7 @@
         <div class="empty" id="emptyState" hidden>No matching words found. Try another search!</div>
       </div>
     </section>
-    <footer>Made with HTML, CSS, and JavaScript — no libraries required. 🩷</footer>
+    <footer>Simple translator with no ads, or trackers.</footer>
   </main>
 
   <script>
